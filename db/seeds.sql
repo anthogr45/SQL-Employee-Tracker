@@ -26,6 +26,8 @@ values (121, "Tyler", "Fernando", 001, 131),
        (141, "Steff", "Silva", 003, 148 ),
        (148, "Desmon", "Silva", 004, 151),
        (161, "Chris", "Croft", 009, 167),
-       (167, "Mason", "Kelly", 010, 151);
+       (167, "Mason", "Kelly", 010, 151)
+       (169, "Owen", "John", 007, 131),
+       (147, "Anthony", "Nathen", 003, 148 );
 
 
