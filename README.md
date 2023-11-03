@@ -11,9 +11,12 @@ Employee Tracker CMS allows the users to maintain and manage data related employ
 
 * Command-line application that accepts user input.
 * When the user is presented with the following options: view all departments, view all roles, view all employees, add a department, add a role, add an employee, and update an employee role.
-* User should be able to view all departments, view all roles and view all employees in a readable format
+* User should be able to view all departments, view all roles and view all employees in a readable format.
 * User should be able to add new departments, employees and roles. 
-* User should be able to update the employee information
+* User should be able to update the employee information.
+* User can view employees by manager.
+* User can view employees by department.
+* User can view the total utilized budget of a department—in other words, the combined salaries of all employees in that department.
 
 
 
@@ -37,5 +40,5 @@ Screen layout is available in the repository path:
   
 ## Features Links
 
-- Application Heroku URL: https://floating-scrubland-52573-663844fb84ec.herokuapp.com
-- Github Repository url: https://github.com/anthogr45/NoteTaker.git
+- Application vedio demo URL: https://drive.google.com/file/d/1rZ6K6bmQjjsRdgFdNTPMlgY8jPLw63w8/view
+- Github Repository url: https://github.com/anthogr45/SQL-Employee-Tracker

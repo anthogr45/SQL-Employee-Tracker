@@ -44,6 +44,10 @@ function questions() {
           'Update employee role',
           'View all departments',
           'View all roles',
+          'Employees By Manager',
+          'Eployees by department',
+        //   'Update employee Manager',
+          'Department budget details',
                     
           'Exit',
         ],
@@ -71,11 +75,21 @@ function questions() {
             case 'View all roles':
                 viewAllRole();
                 break;
+                //Bonus Content 
+            case 'Employees By Manager':
+                viewEmpandManagers();
+                break;
+            case 'Eployees by department':
+                viewEmpbyDep();
+                break;
+            case 'Department budget details':
+                depBudget();
+                break;
             case 'Exit':
                 db.end();
                 break;
         }
-    });;
+    });
   
 }
 
@@ -188,7 +202,7 @@ function addRole() {
         {
             name: 'id',
             type: 'input',
-            message:'Enter the unique 3 digit role ID:',
+            message:'Enter the unique role ID:',
         },
         {
             name: 'title',
@@ -203,7 +217,7 @@ function addRole() {
         {
             name: 'department_id',
             type: 'input',
-            message: 'Enter the 3 digit unique department ID related to the role:',
+            message: 'Enter the unique department ID related for the role:',
         },
         
     ])
@@ -344,4 +358,54 @@ function wrapper () {
       db.end();
     }
   });
+}
+
+//View Employees By Managers
+function viewEmpandManagers() {
+
+    const script = `SELECT e.id AS EMP_ID, e.first_name AS EMP_First_Name, e.last_name AS EMP_Last_Name, m.first_name AS Manager_First_Name, m.last_name AS Manager_Last_Name
+    FROM employee e
+    JOIN employee m ON e.manager_id = m.id
+    ORDER BY m.first_name`;
+
+db.query(script, (err, res) => {
+    if (err) throw err;
+    console.table(res);
+    wrapper ();    
+});
+
+}
+
+//View Employees by department
+function viewEmpbyDep() {
+
+    const script = `SELECT e.id AS EMP_ID, e.first_name AS EMP_First_Name, e.last_name AS EMP_Last_Name, department.dname AS EMP_Department
+    FROM employee e 
+    INNER JOIN e_role ON e.role_id = e_role.id
+    INNER JOIN department ON e_role.department_id = department.id`;
+
+    db.query(script, (err, res) => {
+        if (err) throw err;
+        console.table(res);
+        wrapper ();    
+});
+    
+}
+
+//Function to display budget utilization of each deparment
+function depBudget() {
+
+    const script = `SELECT department.dname AS Department_Name, sum(e_role. salary) AS Total_Utilized_Budget, count(e.id) AS Number_of_Employees 
+    FROM employee e 
+    INNER JOIN e_role ON e.role_id = e_role.id
+    INNER JOIN department ON e_role.department_id = department.id
+    GROUP BY department.dname`;
+    
+
+    db.query(script, (err, res) => {
+        if (err) throw err;
+        console.table(res);
+        wrapper ();    
+    });
+
 }
