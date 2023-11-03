@@ -9,6 +9,9 @@ const app = express();
 app.use(express.urlencoded ({extended: false}));
 app.use(express.json());
 
+let fname;
+let rID;
+
 // Create a connection to the MySQL database
 const db = mysql.createConnection(
     {
@@ -69,7 +72,7 @@ function questions() {
                 viewAllRole();
                 break;
             case 'Exit':
-                connection.end();
+                db.end();
                 break;
         }
     });;
@@ -79,16 +82,18 @@ function questions() {
 // Function to view all employees
 
 function viewAllEMP () {
-    const query = `SELECT e.id, e.first_name, e.last_name, e_role.title, department.dname, e_role.salary, m.first_name AS Manager_Name
+    const script = `SELECT e.id AS EMP_ID, e.first_name AS EMP_First_Name, e.last_name AS EMP_Last_Name, e_role.title AS EMP_Role_Title, department.dname AS EMP_Department, e_role.salary AS EMP_Salary, m.first_name AS Manager_First_Name
     FROM employee e 
     INNER JOIN e_role ON e.role_id = e_role.id
     INNER JOIN department ON e_role.department_id = department.id
     LEFT JOIN employee m ON e.manager_id = m.id`;
 
-db.query(query, (err, res) => {
+db.query(script, (err, res) => {
     if (err) throw err;
     console.table(res);
+    questions();
 });
+// questions();
 }
 
 // Function to add employee details
@@ -210,6 +215,112 @@ function addRole() {
           questions();
         });
       });
+}
+
+//Function to update employee details
+function updateEMProle() {
+
+    const script = `SELECT employee.id, employee.first_name, employee.last_name, e_role.title, e_role.id AS RoleID
+    FROM employee  
+    INNER JOIN e_role ON employee.role_id = e_role.id`;
+
+
+    db.query(script, (err, res) => {
+        if (err) throw err;
+        console.table(res);
+    });
+
+    
+
+    db.query ('SELECT first_name FROM employee', (err, results) => {
+        if (err) throw err;
+
+        const values = results.map((row) => row.first_name);
+
+           // Prompt the user to select a name
+         inquirer
+            .prompt([
+            {
+                type: 'list',
+                name: 'first_name',
+                message: 'Select a name:',
+                choices: values,
+            },
+        ])
+        .then((answers) => {
+        fname = answers.first_name;
+        console.log(`You selected: ${fname}`);
+        promptRole()
+        });
+
+    });
+    // console.log(`You selected vdbvbdf: ${fname}`);
+
+    function promptRole() {
+        db.query ('SELECT id FROM e_role ORDER BY id', (err, results) => {
+            if (err) throw err;
+            const values = results.map((row) => row.id);
+    
+        inquirer
+        .prompt([
+        {
+            type: 'list',
+            name: 'id',
+            message: 'Select a valid Role ID to update the employees details:',
+            choices: values,
+        },
+         ])
+        .then((answers) => {
+        rID = answers.id;
+        console.log(`You selected: ${rID}`);
+        updateEMPRole()
+        });
+
+    });
+    }
+
+    function updateEMPRole() {
+        db.query(
+            'UPDATE employee SET role_id = ? WHERE first_name = ?',
+            [rID, fname],
+            (error, results) => {
+              if (error) {
+                console.error(error);
+              } else {
+                console.log('Update successful');
+              }
+              // Close the connection
+              questions();
+            }
+          );
+    }
+}
+
+//Function to view all department details
+function viewAllDEP() {
+    const script = ` SELECT id AS Department_ID, dname AS Department_Name
+    FROM department
+    ORDER BY id`;
+
+    db.query(script, (err, res) => {
+        if (err) throw err;
+        console.table(res);
+    });
+    questions();
+} 
+
+//Function to view all roles
+function viewAllRole() {
+    const script = ` SELECT R.id AS Role_ID, R.title AS Role_Title, R.salary AS Role_Salary, department.dname AS Department_Name
+    FROM e_role R
+    INNER JOIN department ON R.department_id = department.id
+    ORDER BY R.id`;
+
+    db.query(script, (err, res) => {
+        if (err) throw err;
+        console.table(res);
+    });
+    questions();
 
 }
   
