@@ -91,9 +91,8 @@ function viewAllEMP () {
 db.query(script, (err, res) => {
     if (err) throw err;
     console.table(res);
-    questions();
+    wrapper ();    
 });
-// questions();
 }
 
 // Function to add employee details
@@ -146,7 +145,7 @@ function addEMP () {
             db.query(script, answers, (err, res) => {
                 if (err) throw err;
                 console.log('Employee details successfully added');
-                questions();
+                wrapper ();
             });
           
         });
@@ -154,6 +153,7 @@ function addEMP () {
 
 // Function to add a department
 function addDEP() {
+//Prompts to get new Department information
     inquirer
     .prompt([
         {
@@ -174,7 +174,7 @@ function addDEP() {
       db.query(script, answers, (err, res) => {
         if (err) throw err;
         console.log("Department details successfully added!");
-        questions();
+        wrapper (); 
       });
     });
      
@@ -182,6 +182,7 @@ function addDEP() {
 
 //Function to add roles
 function addRole() {
+//Prompts to get new Role information
     inquirer
     .prompt([
         {
@@ -212,7 +213,7 @@ function addRole() {
         db.query(script, answers, (err, res) => {
           if (err) throw err;
           console.log("New role details successfully added!");
-          questions();
+          wrapper (); 
         });
       });
 }
@@ -254,8 +255,8 @@ function updateEMProle() {
         });
 
     });
-    // console.log(`You selected vdbvbdf: ${fname}`);
-
+    
+    // Prompt the user to select a Role ID
     function promptRole() {
         db.query ('SELECT id FROM e_role ORDER BY id', (err, results) => {
             if (err) throw err;
@@ -278,7 +279,7 @@ function updateEMProle() {
 
     });
     }
-
+    // Update employee role details
     function updateEMPRole() {
         db.query(
             'UPDATE employee SET role_id = ? WHERE first_name = ?',
@@ -288,9 +289,8 @@ function updateEMProle() {
                 console.error(error);
               } else {
                 console.log('Update successful');
-              }
-              // Close the connection
-              questions();
+              }             
+              wrapper (); 
             }
           );
     }
@@ -305,8 +305,9 @@ function viewAllDEP() {
     db.query(script, (err, res) => {
         if (err) throw err;
         console.table(res);
+        wrapper (); 
     });
-    questions();
+    
 } 
 
 //Function to view all roles
@@ -319,8 +320,28 @@ function viewAllRole() {
     db.query(script, (err, res) => {
         if (err) throw err;
         console.table(res);
+        wrapper (); 
     });
-    questions();
-
-}
+   }
   
+//Function to re-navigate through the options or to end the process
+function wrapper () {
+
+   inquirer
+  .prompt([
+    {
+      type: 'confirm',
+      name: 'proceed',
+      message: 'Do you want to proceed?',
+      default: false,
+    },
+  ])
+  .then((answers) => {
+    if (answers.proceed) {
+      questions();
+    } else {
+      console.log('You chose not to proceed.');
+      db.end();
+    }
+  });
+}
